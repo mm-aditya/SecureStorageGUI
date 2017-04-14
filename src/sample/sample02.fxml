@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.paint.*?>
+<?import com.jfoenix.controls.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+
+<FlowPane alignment="CENTER" columnHalignment="CENTER" hgap="10.0" orientation="VERTICAL" prefHeight="348.0" prefWidth="435.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+   <children>
+      <JFXTextField alignment="CENTER" focusColor="#519ada" prefHeight="25.0" prefWidth="225.0" promptText="Enter upload file name and extension">
+        </JFXTextField>
+      <ProgressBar fx:id="bar" prefWidth="200.0" progress="0.0" />
+      <HBox alignment="CENTER" prefHeight="29.0" prefWidth="140.0">
+         <children>
+            <JFXRadioButton alignment="CENTER_LEFT" prefHeight="17.0" prefWidth="50.0" text="CP-1">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <toggleGroup>
+                  <ToggleGroup fx:id="toggleGroup1" />
+               </toggleGroup>
+            </JFXRadioButton>
+            <JFXRadioButton layoutX="10.0" layoutY="16.0" text="CP-2" toggleGroup="$toggleGroup1" />
+            <Region prefHeight="29.0" prefWidth="139.0" HBox.hgrow="ALWAYS" />
+            <JFXButton onAction="#startUpload" prefHeight="25.0" prefWidth="178.0" ripplerFill="#3393d3" style="-fx-background-color: #e7e7e7;" text="Upload" textFill="#5e5e5e">
+        </JFXButton>
+         </children>
+      </HBox>
+   </children>
+</FlowPane>
