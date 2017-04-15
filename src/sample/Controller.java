@@ -16,19 +16,19 @@ public class Controller {
     Client client;
 
     public void moveToUpload() throws IOException {
-
-        client = new Client(6789);
+        client = new Client(6789, this);
         a = new Thread(client);
         a.start();
         Main.switchToTwo();
     }
 
     public void startUpload(){
-        client.startUpload();
-        synchronized (client) {
-            a.notify();
-        }
+        VolatileCl.uploadReady=true;
         bar.setProgress(-1);
+    }
+
+    public void finUpload(){
+        bar.setProgress(0.9F);
     }
 
 }

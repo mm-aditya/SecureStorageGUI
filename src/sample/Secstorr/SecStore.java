@@ -47,9 +47,9 @@ public class SecStore extends Task {
         exec = Executors.newFixedThreadPool(numThreads);
         receivCont = sent;
         try {
-            privateKey = getPrivateKey("src\\sample\\Secstorr\\privateServer.der");
+            privateKey = getPrivateKey("src/sample/Secstorr/privateServer.der");
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            serverCert = (X509Certificate) cf.generateCertificate(new FileInputStream("src\\sample\\Secstorr\\1001522.crt"));
+            serverCert = (X509Certificate) cf.generateCertificate(new FileInputStream("src/sample/Secstorr/1001522.crt"));
         } catch (Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
@@ -208,7 +208,7 @@ public class SecStore extends Task {
 
     @Override
     protected Object call() throws Exception {
-        startServer();
+            startServer();
         return null;
     }
 }

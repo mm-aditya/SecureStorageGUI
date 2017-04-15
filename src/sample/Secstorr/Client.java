@@ -1,6 +1,9 @@
 package sample.Secstorr;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
+import sample.Controller;
+import sample.VolatileCl;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -30,6 +33,7 @@ public class Client extends Task{
     private X509Certificate serverCert;
     private X509Certificate CACert;
     private static boolean shouldUpload = false;
+    Controller receivd;
 
     public void starter() {
         try {
@@ -40,7 +44,8 @@ public class Client extends Task{
         }
     }
 
-    public Client(int portNum) {
+    public Client(int portNum, Controller contr) {
+        receivd = contr;
         portNumber = portNum;
         socket = new Socket();
         SocketAddress sockaddr = new InetSocketAddress("localhost", portNumber);    // set this to IP address of server
@@ -50,7 +55,7 @@ public class Client extends Task{
             out = socket.getOutputStream();
             in = socket.getInputStream();
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            CACert = (X509Certificate) cf.generateCertificate(new FileInputStream("src\\sample\\Secstorr\\CA.crt"));
+            CACert = (X509Certificate) cf.generateCertificate(new FileInputStream("src/sample/Secstorr/CA.crt"));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -70,18 +75,16 @@ public class Client extends Task{
             printer.println("OK CAN");  // TODO: all the printer functions should be encrypted using public key and written with out
             System.out.println("YAY");
             System.out.println("Waiting for user input now");
-            synchronized (this) {
-                this.wait();
+            while(!VolatileCl.uploadReady) {
+                System.out.println("Ready for upload");
             }
-            uploadFile(out, "src\\sample\\Secstorr\\sampleData\\smallFile.txt", "RSA/ECB/PKCS1Padding");
+            uploadFile(out, "src/sample/Secstorr/sampleData/smallFile.txt", "RSA/ECB/PKCS1Padding");
             System.out.println("Ok uploaded.");
+            receivd.finUpload();
             while (true) ;
         }
     }
 
-    public static void startUpload(){
-        shouldUpload = true;
-    }
 
     private boolean verifyServer(String cNonce, byte[] encryptedCnonce, Key key) throws Exception {
         return cNonce.equals(new String(decryptBytes(encryptedCnonce, "RSA/ECB/PKCS1Padding", key)));
