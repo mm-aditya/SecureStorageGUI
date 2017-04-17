@@ -15,6 +15,7 @@ public class Main extends Application {
     static Stage window;
     static Parent root;
     static Parent root2;
+    public static Scene mainScene;
 
 
 
@@ -24,7 +25,8 @@ public class Main extends Application {
         root = FXMLLoader.load(getClass().getResource("sample.fxml"));
         root2 = FXMLLoader.load(getClass().getResource("sample02.fxml"));
         window.setTitle("Connect to server");
-        window.setScene(new Scene(root));
+        mainScene = new Scene(root);
+        window.setScene(mainScene);
         window.show();
     }
 
@@ -35,7 +37,8 @@ public class Main extends Application {
 
     public static void switchToTwo() throws IOException {
         window.setTitle("File Upload");
-        window.setScene(new Scene(root2));
+        mainScene = new Scene(root2);
+        window.setScene(mainScene);
         window.show();
     }
 

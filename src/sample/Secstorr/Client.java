@@ -1,4 +1,4 @@
-package sample.Secstorr;
+package sample.LEGACYSecstore;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -8,7 +8,6 @@ import sample.VolatileCl;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
-import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
@@ -38,6 +37,7 @@ public class Client extends Task{
     public void starter() {
         try {
             this.handshake();
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
@@ -55,7 +55,7 @@ public class Client extends Task{
             out = socket.getOutputStream();
             in = socket.getInputStream();
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            CACert = (X509Certificate) cf.generateCertificate(new FileInputStream("src/sample/Secstorr/CA.crt"));
+            CACert = (X509Certificate) cf.generateCertificate(new FileInputStream("src\\sample\\Secstorr\\CA.crt"));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -67,6 +67,14 @@ public class Client extends Task{
         String cNonce = generateCnonce();
         printer.println(cNonce);
         byte[] encryptedCnonce = readAll(in);
+
+        Platform.runLater(new Runnable() {
+            @Override public void run() {
+                if(!receivd.whatugot.equals(""))
+                    System.out.println("Textfield said: " + receivd.whatugot);
+            }
+        });
+
         printer.println("Cert pls");
         System.out.println("Asking for cert");
         byte[] byteCert = readAll(in);
@@ -75,13 +83,23 @@ public class Client extends Task{
             printer.println("OK CAN");  // TODO: all the printer functions should be encrypted using public key and written with out
             System.out.println("YAY");
             System.out.println("Waiting for user input now");
+
+            Platform.runLater(new Runnable() {
+                @Override public void run() {
+                    receivd.enableUpload();
+                }
+            });
+
             while(!VolatileCl.uploadReady) {
                 System.out.println("Ready for upload");
             }
-            uploadFile(out, "src/sample/Secstorr/sampleData/smallFile.txt", "RSA/ECB/PKCS1Padding");
+            uploadFile(out, "src\\sample\\Secstorr\\sampleData\\smallFile.txt", "RSA/ECB/PKCS1Padding");
             System.out.println("Ok uploaded.");
-            receivd.finUpload();
-            while (true) ;
+            Platform.runLater(new Runnable() {
+                @Override public void run() {
+                    receivd.finUpload();
+                }
+            });
         }
     }
 

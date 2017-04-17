@@ -16,15 +16,21 @@
    <children>
       <VBox alignment="CENTER">
          <children>
-            <JFXButton fx:id="button1" onAction="#startServerr" ripplerFill="#3393d3" style="-fx-background-color: #e7e7e7;" text="Start Server" textFill="#5e5e5e">
-        </JFXButton>
+            <JFXButton fx:id="button1" buttonType="RAISED" onAction="#startServerr" ripplerFill="#3393d3" style="-fx-background-color: #f1f1f1;" text="Start Server" textFill="#5e5e5e">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets></JFXButton>
             <Label id="label12" fx:id="label12" text="No Connection">
+               <VBox.margin>
+                  <Insets top="15.0" />
+               </VBox.margin>
+            </Label>
+            <JFXButton fx:id="viewfile" disable="true" onAction="#viewFILE" ripplerFill="#f5f5f5" style="-fx-background-color: #04ce7d;" text="View File">
                <VBox.margin>
                   <Insets top="10.0" />
                </VBox.margin>
-            </Label>
+            </JFXButton>
          </children>
       </VBox>
-      <Label fx:id="textAr" alignment="TOP_LEFT" prefWidth="610.0" text="No File " />
    </children>
 </FlowPane>

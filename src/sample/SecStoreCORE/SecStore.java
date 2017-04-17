@@ -1,29 +1,29 @@
-package sample.Secstorr;
+package sample.SecStoreCORE;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import sample.ControllerServer;
+import sample.VolatileSR;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.xml.bind.DatatypeConverter;
+import javax.crypto.*;
 import java.io.*;
 import java.net.*;
 import java.nio.file.Files;
 import java.security.Key;
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Arrays;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 /**
  * Created by HanWei on 11/4/2017.
  */
-
+ 
 // when connected, do the handshake protocol
 // Wait for file to be uploaded.
 // Save file.
@@ -34,22 +34,22 @@ import java.util.concurrent.Executors;
 // Support for anycast upload to distributed servers.
 // SSH for security.
 
-public class SecStore extends Task {
+public class SecStore extends Task{
     private ServerSocket server;
     private final Executor exec;
     private final int portNum;
     private X509Certificate serverCert;
     private PrivateKey privateKey;
-    ControllerServer receivCont;
+    private ControllerServer contextController;
 
-    public SecStore(int port, int numThreads, ControllerServer sent) {
+    public SecStore(int port, int numThreads, ControllerServer controller) {
         portNum = port;
         exec = Executors.newFixedThreadPool(numThreads);
-        receivCont = sent;
+        contextController = controller;
         try {
-            privateKey = getPrivateKey("src\\sample\\Secstorr\\privateServer.der");
+            privateKey = getPrivateKey("src\\sample\\SecStoreCORE\\privateServer.der");
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            serverCert = (X509Certificate) cf.generateCertificate(new FileInputStream("src\\sample\\Secstorr\\1001522.crt"));
+            serverCert = (X509Certificate) cf.generateCertificate(new FileInputStream("src\\sample\\SecStoreCORE\\1001522.crt"));
         } catch (Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
@@ -81,13 +81,15 @@ public class SecStore extends Task {
         OutputStream out = socketConnection.getOutputStream();
         InputStream in = socketConnection.getInputStream();
         System.out.println("Connection established");
+
         Platform.runLater(new Runnable() {
             @Override public void run() {
-                receivCont.modLab();
+                contextController.modLab();
             }
         });
-//        PrintWriter printer = new PrintWriter(out);
+
         BufferedReader buff = new BufferedReader(new InputStreamReader(in));
+        SecretKey symKey;
         String inLine = buff.readLine();
         out.write(encryptBytes(inLine.getBytes(), "RSA/ECB/PKCS1Padding", privateKey));
         inLine = buff.readLine();
@@ -97,37 +99,60 @@ public class SecStore extends Task {
         }
         inLine = buff.readLine();
         if (inLine.equals("OK CAN")) {
-            // TODO: send a sym key then wait (CP2)
-            socketConnection.setSoTimeout(10000);   // TODO: clean up sockets and maybe reset timeout
-            receiveFile(in, "RSA/ECB/PKCS1Padding", privateKey);
+            symKey = getSecretKey();
+            out.write(encryptBytes(symKey.getEncoded(), "RSA/ECB/PKCS1Padding", privateKey));
+            waitingForUpload(socketConnection, buff, in, symKey);
+            out.close();
         }
     }
 
-    private void receiveFile(InputStream inputStream, String decryptType, Key key) throws Exception {
-        System.out.println("BOOYAH");
-        String message = new String(decryptBytes(readAll(inputStream), decryptType, key));
-        System.out.println(message); // not the right message. Aditya pls halp.
+    private void waitingForUpload(Socket conn, BufferedReader reader, InputStream in, SecretKey symKey) throws Exception {
+        PrintWriter writer = new PrintWriter(conn.getOutputStream(), true);
+        try {
+            while (true) {
+                String inLine = reader.readLine();
+                if (inLine.equals("AES")) {
+                    receiveFile(conn, writer, reader, in, "AES/ECB/PKCS5Padding", symKey);
+                } else if (inLine.equals("RSA")) {
+                    receiveFile(conn, writer, reader, in, "RSA/ECB/PKCS1Padding", privateKey);
+                }
+            }
+        } catch (SocketException se) {
+            System.out.println("Socket has closed. Thank you for your patronage.");
+            writer.close();
+            reader.close();
+            in.close();
+            conn.close();
+        }
+    }
+
+    private void receiveFile(Socket conn, PrintWriter writer, BufferedReader nameReader, InputStream inputStream, String decryptType, Key key) throws Exception {
+        String fileName = nameReader.readLine();
+        conn.setSoTimeout(1000);   // need this becuase of the readAll method
+        byte[] toEncrypt = readAll(inputStream);
+        System.out.println(Arrays.toString(toEncrypt));
+        String message = new String(decryptBytes(toEncrypt, decryptType, key));
+        FileWriter fileWriter = new FileWriter("src\\sample\\outputs\\" + fileName);
+        fileWriter.write(message);
+        fileWriter.close();
+        VolatileSR.fileLoc = new File("src\\sample\\outputs\\" + fileName).getAbsolutePath();
+
         Platform.runLater(new Runnable() {
             @Override public void run() {
-                receivCont.setTextPane(message);
+                contextController.enableViewer();
             }
         });
-    }
 
-    private byte[] readAll(InputStream in) throws Exception {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        int nRead;
-        byte[] data = new byte[16384];
-        while (true) {
-            try {
-                nRead = in.read(data, 0, data.length);
-                buffer.write(data, 0, nRead);
-            } catch (SocketTimeoutException sTimeout) {
-                break;
+        conn.setSoTimeout(0);
+        writer.println("Done!");
+        System.out.println("Yey");
+
+
+        Platform.runLater(new Runnable() {
+            @Override public void run() {
+                contextController.setTextPane(message);
             }
-        }
-        buffer.flush();
-        return buffer.toByteArray();
+        });
     }
 
     private PrivateKey getPrivateKey(String location) throws Exception {
@@ -137,17 +162,38 @@ public class SecStore extends Task {
         return kf.generatePrivate(spec);
     }
 
+    private SecretKey getSecretKey() throws NoSuchAlgorithmException {
+        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+        return keyGen.generateKey();
+    }
+
     private byte[] encryptBytes(byte[] toBeEncrypted, String encryptType, Key key) throws Exception {
         Cipher cipher = Cipher.getInstance(encryptType);
         cipher.init(Cipher.ENCRYPT_MODE, key);
         return cipher.doFinal(toBeEncrypted);
     }
 
-    private byte[] decryptBytes(byte[] toBeDecrypted, String encryptType, Key key) throws Exception {
-        Cipher cipher = Cipher.getInstance(encryptType);
+    private byte[] decryptBytes(byte[] toBeDecrypted, String decryptType, Key key) throws Exception {
+        Cipher cipher = Cipher.getInstance(decryptType);
         cipher.init(Cipher.DECRYPT_MODE, key);
-//        return rsaCipher.doFinal(toBeDecrypted);
-        return blockCipher(toBeDecrypted, Cipher.DECRYPT_MODE, cipher);
+        if (decryptType.contains("AES")) return cipher.doFinal(toBeDecrypted);
+        else return blockCipher(toBeDecrypted, Cipher.DECRYPT_MODE, cipher);
+    }
+
+    private byte[] readAll(InputStream in) throws Exception {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int nRead;
+        byte[] data = new byte[16777216];
+        while (true) {
+            try {
+                nRead = in.read(data, 0, data.length);
+                buffer.write(data, 0, nRead);
+            } catch (SocketTimeoutException sTimeout) {
+                break;
+            }
+        }
+        System.out.println(buffer.size());
+        return buffer.toByteArray();
     }
 
     private byte[] blockCipher(byte[] bytes, int mode, Cipher cipher) throws IllegalBlockSizeException, BadPaddingException {
@@ -208,7 +254,7 @@ public class SecStore extends Task {
 
     @Override
     protected Object call() throws Exception {
-            startServer();
+        startServer();
         return null;
     }
 }

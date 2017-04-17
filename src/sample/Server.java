@@ -17,6 +17,7 @@ public class Server extends Application {
     static Stage window;
     static Parent root;
     static Parent root2;
+    static Scene mainScene;
 
     public static void main(String[] args) {
         launch(args);
@@ -28,7 +29,8 @@ public class Server extends Application {
         window = primaryStage;
         root = FXMLLoader.load(getClass().getResource("sampleServer.fxml"));
         window.setTitle("SERVER");
-        window.setScene(new Scene(root,500,500));
+        mainScene = new Scene(root,500,500);
+        window.setScene(mainScene);
         window.show();
     }
 }

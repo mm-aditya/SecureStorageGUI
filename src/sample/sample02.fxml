@@ -13,12 +13,13 @@
 
 <FlowPane alignment="CENTER" columnHalignment="CENTER" hgap="10.0" orientation="VERTICAL" prefHeight="348.0" prefWidth="435.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
-      <JFXTextField alignment="CENTER" focusColor="#519ada" prefHeight="25.0" prefWidth="225.0" promptText="Enter upload file name and extension">
+      <JFXTextField fx:id="uploadfileName" alignment="CENTER" focusColor="#519ada" prefHeight="25.0" prefWidth="329.0" promptText="Enter upload file name and extension">
         </JFXTextField>
-      <ProgressBar fx:id="bar" prefWidth="200.0" progress="0.0" />
-      <HBox alignment="CENTER" prefHeight="29.0" prefWidth="140.0">
+      <ProgressBar fx:id="bar" prefHeight="18.0" prefWidth="344.0" progress="0.0" />
+      <Label fx:id="currentProcess" alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="17.0" prefWidth="313.0" text="Process" />
+      <HBox alignment="CENTER" prefHeight="29.0" prefWidth="340.0">
          <children>
-            <JFXRadioButton alignment="CENTER_LEFT" prefHeight="17.0" prefWidth="50.0" text="CP-1">
+            <JFXRadioButton fx:id="rad1" prefHeight="17.0" prefWidth="50.0" text="CP-1">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
@@ -26,10 +27,12 @@
                   <ToggleGroup fx:id="toggleGroup1" />
                </toggleGroup>
             </JFXRadioButton>
-            <JFXRadioButton layoutX="10.0" layoutY="16.0" text="CP-2" toggleGroup="$toggleGroup1" />
+            <JFXRadioButton fx:id="rad2" layoutX="10.0" layoutY="16.0" text="CP-2" toggleGroup="$toggleGroup1" />
             <Region prefHeight="29.0" prefWidth="139.0" HBox.hgrow="ALWAYS" />
-            <JFXButton onAction="#startUpload" prefHeight="25.0" prefWidth="178.0" ripplerFill="#3393d3" style="-fx-background-color: #e7e7e7;" text="Upload" textFill="#5e5e5e">
-        </JFXButton>
+            <JFXButton fx:id="uploadB" buttonType="RAISED" onAction="#startUpload" prefHeight="25.0" prefWidth="84.0" ripplerFill="#3393d3" styleClass="dialog-accept" text="Upload" textFill="#5e5e5e">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets></JFXButton>
          </children>
       </HBox>
    </children>
