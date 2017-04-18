@@ -216,16 +216,41 @@ public class Client extends Task{
         Key key;
         if (encryptionType.contains("RSA")) key = serverCert.getPublicKey();
         else key = symKey;
+
+        Platform.runLater(new Runnable() {
+            @Override public void run() {
+                contextController.setProcess("Reading file...");
+            }
+        });
+
         File upload = new File(pathToFile);
+
+        Platform.runLater(new Runnable() {
+            @Override public void run() {
+                contextController.setProcess("Encrypting with " + (encryptionType.contains("RSA" )? "RSA": "AES") +" ...");
+            }
+        });
+
         byte[] toSend = encryptBytes(Files.readAllBytes(upload.toPath()), encryptionType, key);
         System.out.println("Size: " + toSend.length);
         out.write(encryptionType.substring(0, 3).getBytes());
+        Platform.runLater(new Runnable() {
+            @Override public void run() {
+                contextController.setProcess("Decrypting server side...");
+            }
+        });
         waitForResponse(in);
         out.write((name).getBytes());
         waitForResponse(in);
         out.write(toSend);
         out.flush();
         waitForServer();
+
+        Platform.runLater(new Runnable() {
+            @Override public void run() {
+                contextController.setProcess("Done!");
+            }
+        });
     }
 
     private byte[] waitForResponse(InputStream in) throws Exception {
