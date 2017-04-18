@@ -88,48 +88,54 @@ public class SecStore extends Task{
             }
         });
 
-        BufferedReader buff = new BufferedReader(new InputStreamReader(in));
         SecretKey symKey;
-        String inLine = buff.readLine();
-        out.write(encryptBytes(inLine.getBytes(), "RSA/ECB/PKCS1Padding", privateKey));
-        inLine = buff.readLine();
-        if (inLine.equals("Cert pls")) {
+        byte[] inLine = waitForResponse(socketConnection, in);
+        out.write(encryptBytes(inLine, "RSA/ECB/PKCS1Padding", privateKey));
+        inLine = waitForResponse(socketConnection, in);
+        if (Arrays.equals(inLine,"Cert pls".getBytes())) {
             out.write(serverCert.getEncoded());
             out.flush();
         }
-        inLine = buff.readLine();
-        if (inLine.equals("OK CAN")) {
+        inLine = waitForResponse(socketConnection, in);
+        if (Arrays.equals(inLine, "OK CAN".getBytes())) {
             symKey = getSecretKey();
             out.write(encryptBytes(symKey.getEncoded(), "RSA/ECB/PKCS1Padding", privateKey));
-            waitingForUpload(socketConnection, buff, in, symKey);
-            out.close();
+            waitingForUpload(socketConnection, out, in, symKey);
         }
     }
 
-    private void waitingForUpload(Socket conn, BufferedReader reader, InputStream in, SecretKey symKey) throws Exception {
-        PrintWriter writer = new PrintWriter(conn.getOutputStream(), true);
+    private byte[] waitForResponse(Socket conn, InputStream in) throws Exception {
+        byte[] data = new byte[0];
+        while (data.length == 0) {
+            data = readAll(conn, in);
+        }
+        return data;
+    }
+
+    private void waitingForUpload(Socket conn, OutputStream out, InputStream in, SecretKey symKey) throws Exception {
+        String inLine;
         try {
             while (true) {
-                String inLine = reader.readLine();
+                inLine = new String(waitForResponse(conn, in));
                 if (inLine.equals("AES")) {
-                    receiveFile(conn, writer, reader, in, "AES/ECB/PKCS5Padding", symKey);
+                    receiveFile(conn, out, in, "AES/ECB/PKCS5Padding", symKey);
                 } else if (inLine.equals("RSA")) {
-                    receiveFile(conn, writer, reader, in, "RSA/ECB/PKCS1Padding", privateKey);
+                    receiveFile(conn, out, in, "RSA/ECB/PKCS1Padding", privateKey);
                 }
             }
         } catch (SocketException se) {
             System.out.println("Socket has closed. Thank you for your patronage.");
-            writer.close();
-            reader.close();
+            out.close();
             in.close();
             conn.close();
         }
     }
 
-    private void receiveFile(Socket conn, PrintWriter writer, BufferedReader nameReader, InputStream inputStream, String decryptType, Key key) throws Exception {
-        String fileName = nameReader.readLine();
-        conn.setSoTimeout(1000);   // need this becuase of the readAll method
-        byte[] toEncrypt = readAll(inputStream);
+    private void receiveFile(Socket conn, OutputStream out, InputStream in, String decryptType, Key key) throws Exception {
+        out.write("K".getBytes());
+        String fileName = new String(waitForResponse(conn, in));
+        out.write("K".getBytes());
+        byte[] toEncrypt = waitForResponse(conn, in);
         System.out.println(Arrays.toString(toEncrypt));
         String message = new String(decryptBytes(toEncrypt, decryptType, key));
         FileWriter fileWriter = new FileWriter("src\\sample\\outputs\\" + fileName);
@@ -143,9 +149,8 @@ public class SecStore extends Task{
             }
         });
 
-        conn.setSoTimeout(0);
-        writer.println("Done!");
         System.out.println("Yey");
+        out.write("Done!".getBytes());
 
 
         Platform.runLater(new Runnable() {
@@ -180,7 +185,8 @@ public class SecStore extends Task{
         else return blockCipher(toBeDecrypted, Cipher.DECRYPT_MODE, cipher);
     }
 
-    private byte[] readAll(InputStream in) throws Exception {
+    private byte[] readAll(Socket connection, InputStream in) throws Exception {
+        connection.setSoTimeout(100);
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int nRead;
         byte[] data = new byte[16777216];
@@ -192,7 +198,7 @@ public class SecStore extends Task{
                 break;
             }
         }
-        System.out.println(buffer.size());
+        connection.setSoTimeout(0);
         return buffer.toByteArray();
     }
 
