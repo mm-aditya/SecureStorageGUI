@@ -23,6 +23,7 @@ import java.security.cert.X509Certificate;
 /**
  * Created by HanWei on 11/4/2017.
  */
+
 public class Client extends Task{
     int portNumber;
     private Socket socket;
@@ -63,11 +64,11 @@ public class Client extends Task{
                     switch (encryptionType) {
                         case 1:
                             System.out.println("RSA");
-                            this.testEncryption(numTrial, "RSA", "src\\sample\\SecStoreCORE\\sampleData\\" + sendingFile, receivingFile);
+                            this.testEncryption(numTrial, "RSA", "src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "sampleData" + File.separator + "" + sendingFile, receivingFile);
                             break;
                         case 2:
                             System.out.println("AES");
-                            this.testEncryption(numTrial, "AES", "src\\sample\\SecStoreCORE\\sampleData\\" + sendingFile, receivingFile);
+                            this.testEncryption(numTrial, "AES", "src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "sampleData" + File.separator + "" + sendingFile, receivingFile);
                             break;
                         default:
                             break;
@@ -80,18 +81,18 @@ public class Client extends Task{
 
 
 //            System.out.println("Pure RSA: small");
-//            client.testEncryption(numTrial, "RSA", "src\\ProgrammingAssignment2\\sampleData\\smallFile.txt", "smallRSA.txt");
+//            client.testEncryption(numTrial, "RSA", "src" + File.separator + "ProgrammingAssignment2" + File.separator + "sampleData" + File.separator + "smallFile.txt", "smallRSA.txt");
 //            System.out.println("Pure RSA: medium");
-//            client.testEncryption(numTrial, "RSA", "src\\ProgrammingAssignment2\\sampleData\\medianFile.txt", "mediumRSA.txt");
+//            client.testEncryption(numTrial, "RSA", "src" + File.separator + "ProgrammingAssignment2" + File.separator + "sampleData" + File.separator + "medianFile.txt", "mediumRSA.txt");
 //            System.out.println("Pure RSA: large");
-//            client.testEncryption(numTrial, "RSA", "src\\ProgrammingAssignment2\\sampleData\\largeFile.txt", "largeRSA.txt");
+//            client.testEncryption(numTrial, "RSA", "src" + File.separator + "ProgrammingAssignment2" + File.separator + "sampleData" + File.separator + "largeFile.txt", "largeRSA.txt");
 //            System.out.println("RSA + AES: small");
-//            client.testEncryption(numTrial, "RSA", "src\\ProgrammingAssignment2\\sampleData\\smallFile.txt", "smallAES.txt");
+//            client.testEncryption(numTrial, "RSA", "src" + File.separator + "ProgrammingAssignment2" + File.separator + "sampleData" + File.separator + "smallFile.txt", "smallAES.txt");
 //            System.out.println("RSA + AES: medium");
-//            client.testEncryption(numTrial, "RSA", "src\\ProgrammingAssignment2\\sampleData\\medianFile.txt", "mediumAES.txt");
+//            client.testEncryption(numTrial, "RSA", "src" + File.separator + "ProgrammingAssignment2" + File.separator + "sampleData" + File.separator + "medianFile.txt", "mediumAES.txt");
 //            System.out.println("RSA + AES: large");
-//            client.testEncryption(numTrial, "RSA", "src\\ProgrammingAssignment2\\sampleData\\largeFile.txt", "largeAES.txt");
-//            client.uploadFile("src\\ProgrammingAssignment2\\sampleData\\smallFile.txt", "meow.txt", "AES/ECB/PKCS5Padding");
+//            client.testEncryption(numTrial, "RSA", "src" + File.separator + "ProgrammingAssignment2" + File.separator + "sampleData" + File.separator + "largeFile.txt", "largeAES.txt");
+//            client.uploadFile("src" + File.separator + "ProgrammingAssignment2" + File.separator + "sampleData" + File.separator + "smallFile.txt", "meow.txt", "AES/ECB/PKCS5Padding");
 //            System.out.println("Ok all done.");
 
 
@@ -115,7 +116,7 @@ public class Client extends Task{
             out = socket.getOutputStream();
             in = socket.getInputStream();
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            CACert = (X509Certificate) cf.generateCertificate(new FileInputStream("src\\sample\\SecStoreCORE\\CA.crt"));
+            CACert = (X509Certificate) cf.generateCertificate(new FileInputStream("src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "CA.crt"));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

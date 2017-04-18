@@ -59,8 +59,6 @@ public class Controller {
     }
 
     public void startUpload(){
-
-        VolatileCl.uploadReady=true;
         VolatileCl.fileToUpload = uploadfileName.getText();
         VolatileCl.receivedFileName = savefileName.getText();
         if (rad1.isSelected())
@@ -69,6 +67,8 @@ public class Controller {
             VolatileCl.encryptiontype=2;
         else
             VolatileCl.encryptiontype=2;
+
+        VolatileCl.uploadReady=true;
         bar.setProgress(-1);
 
     }

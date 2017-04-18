@@ -47,9 +47,9 @@ public class SecStore extends Task{
         exec = Executors.newFixedThreadPool(numThreads);
         contextController = controller;
         try {
-            privateKey = getPrivateKey("src\\sample\\SecStoreCORE\\privateServer.der");
+            privateKey = getPrivateKey("src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "privateServer.der");
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            serverCert = (X509Certificate) cf.generateCertificate(new FileInputStream("src\\sample\\SecStoreCORE\\1001522.crt"));
+            serverCert = (X509Certificate) cf.generateCertificate(new FileInputStream("src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "1001522.crt"));
         } catch (Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
@@ -136,10 +136,10 @@ public class SecStore extends Task{
         String fileName = new String(waitForResponse(conn, in));
         out.write("K".getBytes());
         byte[] toEncrypt = waitForResponse(conn, in);
-        FileOutputStream fileOutputWriter = new FileOutputStream("src\\sample\\outputs\\" + fileName);
+        FileOutputStream fileOutputWriter = new FileOutputStream("src" + File.separator + "sample" + File.separator + "outputs" + File.separator + "" + fileName);
         fileOutputWriter.write(decryptBytes(toEncrypt, decryptType, key));
         fileOutputWriter.close();
-        VolatileSR.fileLoc = new File("src\\sample\\outputs\\" + fileName).getAbsolutePath();
+        VolatileSR.fileLoc = new File("src" + File.separator + "sample" + File.separator + "outputs" + File.separator + "" + fileName).getAbsolutePath();
 
         Platform.runLater(new Runnable() {
             @Override public void run() {
