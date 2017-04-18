@@ -15,6 +15,7 @@
    <children>
       <JFXTextField fx:id="uploadfileName" alignment="CENTER" focusColor="#519ada" prefHeight="25.0" prefWidth="329.0" promptText="Enter upload file name and extension">
         </JFXTextField>
+      <JFXTextField fx:id="savefileName" alignment="CENTER" focusColor="#519ada" layoutX="56.0" layoutY="125.0" prefHeight="25.0" prefWidth="329.0" promptText="Enter name to save file as and extension" />
       <ProgressBar fx:id="bar" prefHeight="18.0" prefWidth="344.0" progress="0.0" />
       <Label fx:id="currentProcess" alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="17.0" prefWidth="313.0" text="Process" />
       <HBox alignment="CENTER" prefHeight="29.0" prefWidth="340.0">

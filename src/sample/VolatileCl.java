@@ -5,6 +5,7 @@ package sample;
  */
 public class VolatileCl {
     public static volatile boolean uploadReady = false;
-    public static String fileToUpload;
-    public static int encryptiontype;
+    public static volatile String fileToUpload;
+    public static volatile String receivedFileName;
+    public static volatile int encryptiontype;
 }

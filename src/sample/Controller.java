@@ -23,7 +23,9 @@ public class Controller {
     public ProgressBar bar;
     public JFXButton uploadB;
     public JFXTextField serverIP;
+    public JFXComboBox serverIPBOX;
     public JFXTextField uploadfileName;
+    public JFXTextField savefileName;
     public StackPane stackPane;
     public Label currentProcess;
     public JFXRadioButton rad1;
@@ -35,8 +37,9 @@ public class Controller {
     public String whatugot;
 
     public void moveToUpload() throws IOException {
-        serverIP = (JFXTextField) Main.mainScene.lookup("#serverIP");
-        whatugot = serverIP.getText();
+        //serverIP = (JFXTextField) Main.mainScene.lookup("#serverIP");
+        serverIPBOX = (JFXComboBox) Main.mainScene.lookup("#serverIPBOX");
+        whatugot = serverIPBOX.getValue().toString();
 
         if(whatugot.equals(""))
             loadDialog();
@@ -50,13 +53,16 @@ public class Controller {
         uploadB.setDisable(true);
         currentProcess = (Label) Main.mainScene.lookup("#currentProcess");
         uploadfileName = (JFXTextField) Main.mainScene.lookup("#uploadfileName");
+        savefileName = (JFXTextField) Main.mainScene.lookup("#savefileName");
         rad1 = (JFXRadioButton) Main.mainScene.lookup("#rad1");
         rad2 = (JFXRadioButton) Main.mainScene.lookup("#rad2");
     }
 
     public void startUpload(){
+
         VolatileCl.uploadReady=true;
         VolatileCl.fileToUpload = uploadfileName.getText();
+        VolatileCl.receivedFileName = savefileName.getText();
         if (rad1.isSelected())
             VolatileCl.encryptiontype=1;
         else if (rad2.isSelected())
@@ -64,6 +70,7 @@ public class Controller {
         else
             VolatileCl.encryptiontype=2;
         bar.setProgress(-1);
+
     }
 
     public void finUpload(){

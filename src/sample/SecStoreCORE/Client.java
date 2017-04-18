@@ -34,36 +34,47 @@ public class Client extends Task{
 
     private int encryptionType;
     private String sendingFile;
+    private String receivingFile;
     private boolean trust;
     private Controller contextController;
 
     public void startHere() {
         //Client client = new Client("localhost", 6789);
         try {
-            //if (!trust)
-                this.handshake();
+            while(true) {
+                if (!trust)
+                    this.handshake();
 
-                while(!VolatileCl.uploadReady)
-                    ;
+                else {
 
-                sendingFile = VolatileCl.fileToUpload;
-                encryptionType = VolatileCl.encryptiontype;
-           // else {
-                int numTrial = 1;
-                switch (encryptionType) {
-                    case 1:
-                        System.out.println("RSA");
-                        this.testEncryption(numTrial, "RSA", "src\\sample\\SecStoreCORE\\sampleData\\" + sendingFile, "RSA_Stored.txt");
-                        break;
-                    case 2:
-                        System.out.println("AES");
-                        this.testEncryption(numTrial, "AES", "src\\sample\\SecStoreCORE\\sampleData\\" + sendingFile, "AES_Stored.txt");
-                        break;
-                    default:
-                        break;
+                    while (!VolatileCl.uploadReady) {
+                        System.out.println("Name of input: " + VolatileCl.fileToUpload);
+                        System.out.println("Name of output: " + VolatileCl.receivedFileName + "\n");
+                    }
+
+                    sendingFile = VolatileCl.fileToUpload;
+                    receivingFile = VolatileCl.receivedFileName;
+                    encryptionType = VolatileCl.encryptiontype;
+
+                    int numTrial = 1;
+                    if (receivingFile.equals(""))
+                        receivingFile = "untitled.txt";
+                    switch (encryptionType) {
+                        case 1:
+                            System.out.println("RSA");
+                            this.testEncryption(numTrial, "RSA", "src\\sample\\SecStoreCORE\\sampleData\\" + sendingFile, receivingFile);
+                            break;
+                        case 2:
+                            System.out.println("AES");
+                            this.testEncryption(numTrial, "AES", "src\\sample\\SecStoreCORE\\sampleData\\" + sendingFile, receivingFile);
+                            break;
+                        default:
+                            break;
+                    }
+                    System.out.println("Finish");
+                    VolatileCl.uploadReady = false;
                 }
-                System.out.println("Finish");
-            //}
+            }
 
 
 
@@ -81,9 +92,6 @@ public class Client extends Task{
 //            client.testEncryption(numTrial, "RSA", "src\\ProgrammingAssignment2\\sampleData\\largeFile.txt", "largeAES.txt");
 //            client.uploadFile("src\\ProgrammingAssignment2\\sampleData\\smallFile.txt", "meow.txt", "AES/ECB/PKCS5Padding");
 //            System.out.println("Ok all done.");
-
-
-
 
 
         } catch (Exception e) {
