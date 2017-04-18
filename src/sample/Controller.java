@@ -26,7 +26,10 @@ public class Controller {
     public JFXComboBox serverIPBOX;
     public JFXTextField uploadfileName;
     public JFXTextField savefileName;
+    @FXML
     public StackPane stackPane;
+    @FXML
+    public StackPane stackPaneMain;
     public Label currentProcess;
     public JFXRadioButton rad1;
     public JFXRadioButton rad2;
@@ -56,6 +59,8 @@ public class Controller {
         savefileName = (JFXTextField) Main.mainScene.lookup("#savefileName");
         rad1 = (JFXRadioButton) Main.mainScene.lookup("#rad1");
         rad2 = (JFXRadioButton) Main.mainScene.lookup("#rad2");
+
+        stackPaneMain = (StackPane) Main.mainScene.lookup("#stackPaneMain");
     }
 
     public void startUpload(){
@@ -67,10 +72,11 @@ public class Controller {
             VolatileCl.encryptiontype=2;
         else
             VolatileCl.encryptiontype=2;
-
         VolatileCl.uploadReady=true;
-        bar.setProgress(-1);
+    }
 
+    public void progressBarUploading(){
+        bar.setProgress(-1);
     }
 
     public void finUpload(){
@@ -83,11 +89,26 @@ public class Controller {
 
 
     public void loadDialog(){
-
         JFXDialogLayout content = new JFXDialogLayout();
         content.setHeading(new Text("NO SERVER IP"));
         content.setBody(new Text("Please enter a valid server ip that you want to connect\nand transfer your files to"));
         JFXDialog dialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER );
+        JFXButton button = new JFXButton("OK");
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                dialog.close();
+            }
+        });
+        content.setActions(button);
+        dialog.show();
+    }
+
+    public void loadDialogMain(String header, String message){
+        JFXDialogLayout content = new JFXDialogLayout();
+        content.setHeading(new Text(header));
+        content.setBody(new Text(message));
+        JFXDialog dialog = new JFXDialog(stackPaneMain, content, JFXDialog.DialogTransition.CENTER );
         JFXButton button = new JFXButton("OK");
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override

@@ -58,23 +58,52 @@ public class Client extends Task{
                     receivingFile = VolatileCl.receivedFileName;
                     encryptionType = VolatileCl.encryptiontype;
 
-                    int numTrial = 1;
-                    if (receivingFile.equals(""))
-                        receivingFile = "untitled.txt";
-                    switch (encryptionType) {
-                        case 1:
-                            System.out.println("RSA");
-                            this.testEncryption(numTrial, "RSA", "src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "sampleData" + File.separator + "" + sendingFile, receivingFile);
-                            break;
-                        case 2:
-                            System.out.println("AES");
-                            this.testEncryption(numTrial, "AES", "src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "sampleData" + File.separator + "" + sendingFile, receivingFile);
-                            break;
-                        default:
-                            break;
+
+                    System.out.println("Does file exits?: "+new File("src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "sampleData" + File.separator + sendingFile).exists());
+
+                    if(new File("src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "sampleData" + File.separator + sendingFile).exists()) {
+
+                        if (new File("src" + File.separator + "sample" + File.separator + "outputs" + File.separator + receivingFile).exists()){
+                            Platform.runLater(new Runnable() {
+                                @Override public void run() {
+                                    contextController.loadDialogMain("WARNING: File exists!","This file already exists in the\noutput directory! This is just a warning.");
+                                }
+                            });
+                        }
+
+                        Platform.runLater(new Runnable() {
+                            @Override public void run() {
+                                contextController.progressBarUploading();
+                            }
+                        });
+
+                        int numTrial = 1;
+                        if (receivingFile.equals(""))
+                            receivingFile = "untitled.txt";
+                        switch (encryptionType) {
+                            case 1:
+                                System.out.println("RSA");
+                                this.testEncryption(numTrial, "RSA", "src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "sampleData" + File.separator + "" + sendingFile, receivingFile);
+                                break;
+                            case 2:
+                                System.out.println("AES");
+                                this.testEncryption(numTrial, "AES", "src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "sampleData" + File.separator + "" + sendingFile, receivingFile);
+                                break;
+                            default:
+                                break;
+                        }
+                        System.out.println("Finish");
+                        VolatileCl.uploadReady = false;
                     }
-                    System.out.println("Finish");
-                    VolatileCl.uploadReady = false;
+                    else
+                    {
+                        VolatileCl.uploadReady = false;
+                        Platform.runLater(new Runnable() {
+                            @Override public void run() {
+                                contextController.loadDialogMain("Input file does not exist!","This file does not exist in the\nstandard input directory.\nDir: src\\sample\\SecStoreSAMPLE\\sampleData");
+                            }
+                        });
+                    }
                 }
             }
 
@@ -355,7 +384,7 @@ public class Client extends Task{
         Platform.runLater(new Runnable() {
             @Override public void run() {
                 contextController.finUpload();
-                contextController.setProcess("File encrypted and uploaded successfully! Time taken: " + average);
+                contextController.setProcess("File encrypted and uploaded successfully! Time taken: " + average + "ms");
             }
         });
         System.out.println("Average time: " + average);
