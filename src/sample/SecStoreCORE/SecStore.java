@@ -136,11 +136,9 @@ public class SecStore extends Task{
         String fileName = new String(waitForResponse(conn, in));
         out.write("K".getBytes());
         byte[] toEncrypt = waitForResponse(conn, in);
-        System.out.println(Arrays.toString(toEncrypt));
-        String message = new String(decryptBytes(toEncrypt, decryptType, key));
-        FileWriter fileWriter = new FileWriter("src\\sample\\outputs\\" + fileName);
-        fileWriter.write(message);
-        fileWriter.close();
+        FileOutputStream fileOutputWriter = new FileOutputStream("PA2Saved\\" + fileName);
+        fileOutputWriter.write(decryptBytes(toEncrypt, decryptType, key));
+        fileOutputWriter.close();
         VolatileSR.fileLoc = new File("src\\sample\\outputs\\" + fileName).getAbsolutePath();
 
         Platform.runLater(new Runnable() {
@@ -155,8 +153,8 @@ public class SecStore extends Task{
 
         Platform.runLater(new Runnable() {
             @Override public void run() {
-                contextController.setTextPane(message);
-            }
+                contextController.setTextPane(fileName);
+            }   // this previously showed the string message, I just changed it to the file name
         });
     }
 
