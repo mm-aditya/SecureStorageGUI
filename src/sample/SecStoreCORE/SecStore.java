@@ -41,6 +41,7 @@ public class SecStore extends Task{
     private X509Certificate serverCert;
     private PrivateKey privateKey;
     private ControllerServer contextController;
+    private int numOfClients;
 
     public SecStore(int port, int numThreads, ControllerServer controller) {
         portNum = port;
@@ -70,6 +71,7 @@ public class SecStore extends Task{
                     }
                 };
                 exec.execute(task);
+                numOfClients++;
             }
         } catch (IOException ioE) {
             System.out.println(ioE.getMessage());
@@ -81,10 +83,10 @@ public class SecStore extends Task{
         OutputStream out = socketConnection.getOutputStream();
         InputStream in = socketConnection.getInputStream();
         System.out.println("Connection established");
-
+        
         Platform.runLater(new Runnable() {
             @Override public void run() {
-                contextController.modLab();
+                contextController.modLab(numOfClients);
             }
         });
 
@@ -147,6 +149,12 @@ public class SecStore extends Task{
             }
         });
 
+        Platform.runLater(new Runnable() {
+            @Override public void run() {
+                contextController.addToTree(fileName,Thread.currentThread().getId()%numOfClients +1, new File("src" + File.separator + "sample" + File.separator + "outputs" + File.separator + "" + fileName).getAbsolutePath() );
+            }
+        });
+
         System.out.println("Yey");
         out.write("Done!".getBytes());
 
@@ -156,6 +164,7 @@ public class SecStore extends Task{
                 contextController.setTextPane(fileName);
             }   // this previously showed the string message, I just changed it to the file name
         });
+
     }
 
     private PrivateKey getPrivateKey(String location) throws Exception {

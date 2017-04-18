@@ -81,11 +81,6 @@ public class SecStore extends Task {
         OutputStream out = socketConnection.getOutputStream();
         InputStream in = socketConnection.getInputStream();
         System.out.println("Connection established");
-        Platform.runLater(new Runnable() {
-            @Override public void run() {
-                receivCont.modLab();
-            }
-        });
 //        PrintWriter printer = new PrintWriter(out);
         BufferedReader buff = new BufferedReader(new InputStreamReader(in));
         String inLine = buff.readLine();
