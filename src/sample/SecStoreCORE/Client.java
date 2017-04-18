@@ -48,8 +48,9 @@ public class Client extends Task{
                 else {
 
                     while (!VolatileCl.uploadReady) {
-                        System.out.println("Name of input: " + VolatileCl.fileToUpload);
-                        System.out.println("Name of output: " + VolatileCl.receivedFileName + "\n");
+//                        System.out.println("Name of input: " + VolatileCl.fileToUpload);
+//                        System.out.println("Name of output: " + VolatileCl.receivedFileName + "\n");
+                        ;
                     }
 
                     sendingFile = VolatileCl.fileToUpload;

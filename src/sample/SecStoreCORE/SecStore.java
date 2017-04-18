@@ -136,7 +136,7 @@ public class SecStore extends Task{
         String fileName = new String(waitForResponse(conn, in));
         out.write("K".getBytes());
         byte[] toEncrypt = waitForResponse(conn, in);
-        FileOutputStream fileOutputWriter = new FileOutputStream("PA2Saved\\" + fileName);
+        FileOutputStream fileOutputWriter = new FileOutputStream("src\\sample\\outputs\\" + fileName);
         fileOutputWriter.write(decryptBytes(toEncrypt, decryptType, key));
         fileOutputWriter.close();
         VolatileSR.fileLoc = new File("src\\sample\\outputs\\" + fileName).getAbsolutePath();
