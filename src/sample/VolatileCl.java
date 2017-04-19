@@ -10,6 +10,7 @@ public class VolatileCl {
     public static volatile String fileToUpload;
     public static volatile String receivedFileName;
     public static volatile int encryptiontype;
+    public static volatile boolean appRunning = true;
 
 
     public static volatile ArrayList<ArrayList<String>> clientData;

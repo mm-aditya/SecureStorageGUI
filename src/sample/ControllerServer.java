@@ -77,6 +77,7 @@ public class ControllerServer {
         button.setButtonType(JFXButton.ButtonType.RAISED);
         temp.setMargin(newLab, new Insets(14.3,50,10,10));
         temp.setMargin(button, new Insets(10,5,10,50));
+        temp.setAlignment(Pos.TOP_CENTER);
         temp.getChildren().addAll(newLab,button);
         boxer.getChildren().add(temp);
     }

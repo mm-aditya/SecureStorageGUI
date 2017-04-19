@@ -42,72 +42,71 @@ public class Client extends Task{
     public void startHere() {
         //Client client = new Client("localhost", 6789);
         try {
-            while(true) {
+            while(VolatileCl.appRunning) {
                 if (!trust)
                     this.handshake();
 
                 else {
 
-                    while (!VolatileCl.uploadReady) {
+                    while ((!VolatileCl.uploadReady) && (VolatileCl.appRunning)) {
 //                        System.out.println("Name of input: " + VolatileCl.fileToUpload);
 //                        System.out.println("Name of output: " + VolatileCl.receivedFileName + "\n");
                         ;
                     }
 
-                    sendingFile = VolatileCl.fileToUpload;
-                    receivingFile = VolatileCl.receivedFileName;
-                    encryptionType = VolatileCl.encryptiontype;
+                    if(VolatileCl.appRunning) {
+                        sendingFile = VolatileCl.fileToUpload;
+                        receivingFile = VolatileCl.receivedFileName;
+                        encryptionType = VolatileCl.encryptiontype;
 
+                        System.out.println("Does file exits?: " + new File("src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "sampleData" + File.separator + sendingFile).exists());
 
-                    System.out.println("Does file exits?: "+new File("src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "sampleData" + File.separator + sendingFile).exists());
+                        if (new File("src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "sampleData" + File.separator + sendingFile).exists()) {
+//
+//                        if (new File("src" + File.separator + "sample" + File.separator + "outputs" + File.separator + receivingFile).exists()){
+//                            Platform.runLater(new Runnable() {
+//                                @Override public void run() {
+//                                    contextController.loadDialogMain("WARNING: File exists!","This file already exists in the\noutput directory! This is just a warning.");
+//                                }
+//                            });
+//                        }
 
-                    if(new File("src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "sampleData" + File.separator + sendingFile).exists()) {
-
-                        if (new File("src" + File.separator + "sample" + File.separator + "outputs" + File.separator + receivingFile).exists()){
                             Platform.runLater(new Runnable() {
-                                @Override public void run() {
-                                    contextController.loadDialogMain("WARNING: File exists!","This file already exists in the\noutput directory! This is just a warning.");
+                                @Override
+                                public void run() {
+                                    contextController.progressBarUploading();
+                                }
+                            });
+
+                            int numTrial = 1;
+                            if (receivingFile.equals(""))
+                                receivingFile = "untitled.txt";
+                            switch (encryptionType) {
+                                case 1:
+                                    System.out.println("RSA");
+                                    this.testEncryption(numTrial, "RSA", "src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "sampleData" + File.separator + "" + sendingFile, receivingFile);
+                                    break;
+                                case 2:
+                                    System.out.println("AES");
+                                    this.testEncryption(numTrial, "AES", "src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "sampleData" + File.separator + "" + sendingFile, receivingFile);
+                                    break;
+                                default:
+                                    break;
+                            }
+                            System.out.println("Finish");
+                            VolatileCl.uploadReady = false;
+                        } else {
+                            VolatileCl.uploadReady = false;
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    contextController.loadDialogMain("Input file does not exist!", "This file does not exist in the\nstandard input directory.\nDir: src\\sample\\SecStoreSAMPLE\\sampleData");
                                 }
                             });
                         }
-
-                        Platform.runLater(new Runnable() {
-                            @Override public void run() {
-                                contextController.progressBarUploading();
-                            }
-                        });
-
-                        int numTrial = 1;
-                        if (receivingFile.equals(""))
-                            receivingFile = "untitled.txt";
-                        switch (encryptionType) {
-                            case 1:
-                                System.out.println("RSA");
-                                this.testEncryption(numTrial, "RSA", "src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "sampleData" + File.separator + "" + sendingFile, receivingFile);
-                                break;
-                            case 2:
-                                System.out.println("AES");
-                                this.testEncryption(numTrial, "AES", "src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "sampleData" + File.separator + "" + sendingFile, receivingFile);
-                                break;
-                            default:
-                                break;
-                        }
-                        System.out.println("Finish");
-                        VolatileCl.uploadReady = false;
-                    }
-                    else
-                    {
-                        VolatileCl.uploadReady = false;
-                        Platform.runLater(new Runnable() {
-                            @Override public void run() {
-                                contextController.loadDialogMain("Input file does not exist!","This file does not exist in the\nstandard input directory.\nDir: src\\sample\\SecStoreSAMPLE\\sampleData");
-                            }
-                        });
                     }
                 }
             }
-
-
 
 //            System.out.println("Pure RSA: small");
 //            client.testEncryption(numTrial, "RSA", "src" + File.separator + "ProgrammingAssignment2" + File.separator + "sampleData" + File.separator + "smallFile.txt", "smallRSA.txt");
@@ -124,10 +123,12 @@ public class Client extends Task{
 //            client.uploadFile("src" + File.separator + "ProgrammingAssignment2" + File.separator + "sampleData" + File.separator + "smallFile.txt", "meow.txt", "AES/ECB/PKCS5Padding");
 //            System.out.println("Ok all done.");
 
+            Thread.currentThread().interrupt();
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -148,49 +149,56 @@ public class Client extends Task{
             CACert = (X509Certificate) cf.generateCertificate(new FileInputStream("src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "CA.crt"));
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            Thread.currentThread().interrupt();
         }
     }
 
     private void handshake() throws Exception {
 
-
-        Platform.runLater(new Runnable() {
-            @Override public void run() {
-                contextController.setProcess("Generating nonce...");
-            }
-        });
-
-
-        String cNonce = generateCnonce();
-        out.write(cNonce.getBytes());
-        byte[] encryptedCnonce = waitForResponse(in);
-        out.write("Cert pls".getBytes());
-        System.out.println("Asking for cert");
-
-
-        Platform.runLater(new Runnable() {
-            @Override public void run() {
-                contextController.setProcess("Obtaining X509 Certificate...");
-            }
-        });
-
-
-        byte[] byteCert = waitForResponse(in);
-        serverCert = getCert(byteCert);
-        if (verifyServer(cNonce, encryptedCnonce, serverCert.getPublicKey())) {
-            out.write("OK CAN".getBytes());
+        try {
 
             Platform.runLater(new Runnable() {
-                @Override public void run() {
-                    contextController.setProcess("SecStore Validated!");
-                    contextController.enableUpload();
+                @Override
+                public void run() {
+                    contextController.setProcess("Generating nonce...");
                 }
             });
 
 
-            trust = true;
-            byte[] byteSecretKey = decryptBytes(readAll(in), "RSA/ECB/PKCS1Padding", serverCert.getPublicKey());
-            getSymKey(byteSecretKey);
+            String cNonce = generateCnonce();
+            out.write(cNonce.getBytes());
+            byte[] encryptedCnonce = waitForResponse(in);
+            out.write("Cert pls".getBytes());
+            System.out.println("Asking for cert");
+
+
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    contextController.setProcess("Obtaining X509 Certificate...");
+                }
+            });
+
+
+            byte[] byteCert = waitForResponse(in);
+            serverCert = getCert(byteCert);
+            if (verifyServer(cNonce, encryptedCnonce, serverCert.getPublicKey())) {
+                out.write("OK CAN".getBytes());
+
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        contextController.setProcess("SecStore Validated!");
+                        contextController.enableUpload();
+                    }
+                });
+
+                trust = true;
+                byte[] byteSecretKey = decryptBytes(readAll(in), "RSA/ECB/PKCS1Padding", serverCert.getPublicKey());
+                getSymKey(byteSecretKey);
+            }
+        }catch (Exception e){
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -374,12 +382,20 @@ public class Client extends Task{
         else if (RSAAES.equals("AES")) encryption = "AES/ECB/PKCS5Padding";
         else return;
 
+        FileWriter writer = new FileWriter("src" + File.separator + "sample" + File.separator + "Timings.csv", true);
+        writer.append(fileName + ",");
+        long total = 0;
+        long trialTiming;
+        long startTrial;
+
         for (int i = 0; i < numTrial; i++) {
-            long startTrial = System.currentTimeMillis();
+            startTrial = System.currentTimeMillis();
             uploadFile(path, fileName, encryption);
-            System.out.println(System.currentTimeMillis() - startTrial);
+            trialTiming = System.currentTimeMillis() - startTrial;
+            System.out.println(trialTiming);
+            writer.append("" + trialTiming + ",");
+            total += trialTiming;
         }
-        long total = System.currentTimeMillis() - start;
         long average = total / numTrial;
         Platform.runLater(new Runnable() {
             @Override public void run() {
@@ -387,6 +403,9 @@ public class Client extends Task{
                 contextController.setProcess("File encrypted and uploaded successfully! Time taken: " + average + "ms");
             }
         });
+        writer.write("" + average + "\n");
+        writer.flush();
+        writer.close();
         System.out.println("Average time: " + average);
     }
 

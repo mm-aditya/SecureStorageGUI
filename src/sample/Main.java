@@ -42,4 +42,9 @@ public class Main extends Application {
         window.show();
     }
 
+    @Override
+    public void stop() throws Exception {
+        VolatileCl.appRunning = false;
+    }
+
 }

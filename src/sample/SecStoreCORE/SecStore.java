@@ -35,7 +35,7 @@ import java.util.concurrent.Executors;
 // SSH for security.
 
 public class SecStore extends Task{
-    private ServerSocket server;
+    public static ServerSocket server;
     private final Executor exec;
     private final int portNum;
     private X509Certificate serverCert;
@@ -60,7 +60,7 @@ public class SecStore extends Task{
     public void startServer() {
         try {
             server = new ServerSocket(portNum);
-            while (true) {
+            while (VolatileSR.isRunning) {
                 final Socket connection = server.accept();
                 Runnable task = () -> {
                     try {
@@ -73,37 +73,55 @@ public class SecStore extends Task{
                 exec.execute(task);
                 numOfClients++;
             }
+            System.out.println("Stopped running yall");
         } catch (IOException ioE) {
             System.out.println(ioE.getMessage());
-            ioE.printStackTrace();
+            //ioE.printStackTrace();
+            try {
+                System.out.println("closing server");
+                server.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            VolatileSR.isRunning = false;
+            Thread.currentThread().interrupt();
         }
     }
 
     private void handleRequest(Socket socketConnection) throws Exception {
-        OutputStream out = socketConnection.getOutputStream();
-        InputStream in = socketConnection.getInputStream();
-        System.out.println("Connection established");
-        
-        Platform.runLater(new Runnable() {
-            @Override public void run() {
-                contextController.modLab(numOfClients);
-            }
-        });
+        try {
+            OutputStream out = socketConnection.getOutputStream();
+            InputStream in = socketConnection.getInputStream();
+            System.out.println("Connection established");
 
-        SecretKey symKey;
-        byte[] inLine = waitForResponse(socketConnection, in);
-        out.write(encryptBytes(inLine, "RSA/ECB/PKCS1Padding", privateKey));
-        inLine = waitForResponse(socketConnection, in);
-        if (Arrays.equals(inLine,"Cert pls".getBytes())) {
-            out.write(serverCert.getEncoded());
-            out.flush();
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    contextController.modLab(numOfClients);
+                }
+            });
+
+            SecretKey symKey;
+            byte[] inLine = waitForResponse(socketConnection, in);
+            out.write(encryptBytes(inLine, "RSA/ECB/PKCS1Padding", privateKey));
+            inLine = waitForResponse(socketConnection, in);
+            if (Arrays.equals(inLine, "Cert pls".getBytes())) {
+                out.write(serverCert.getEncoded());
+                out.flush();
+            }
+            inLine = waitForResponse(socketConnection, in);
+            if (Arrays.equals(inLine, "OK CAN".getBytes())) {
+                symKey = getSecretKey();
+                out.write(encryptBytes(symKey.getEncoded(), "RSA/ECB/PKCS1Padding", privateKey));
+                waitingForUpload(socketConnection, out, in, symKey);
+            }
         }
-        inLine = waitForResponse(socketConnection, in);
-        if (Arrays.equals(inLine, "OK CAN".getBytes())) {
-            symKey = getSecretKey();
-            out.write(encryptBytes(symKey.getEncoded(), "RSA/ECB/PKCS1Padding", privateKey));
-            waitingForUpload(socketConnection, out, in, symKey);
+        catch (IOException iOE){
+            System.out.println(iOE.getMessage());
+            server.close();
+            VolatileSR.isRunning = false;
         }
+
     }
 
     private byte[] waitForResponse(Socket conn, InputStream in) throws Exception {
@@ -126,7 +144,16 @@ public class SecStore extends Task{
                 }
             }
         } catch (SocketException se) {
+
+            numOfClients--;
+            Platform.runLater(new Runnable() {
+                @Override public void run() {
+                    contextController.modLab(numOfClients);
+                }
+            });
+
             System.out.println("Socket has closed. Thank you for your patronage.");
+            server.close();
             out.close();
             in.close();
             conn.close();
@@ -134,37 +161,45 @@ public class SecStore extends Task{
     }
 
     private void receiveFile(Socket conn, OutputStream out, InputStream in, String decryptType, Key key) throws Exception {
-        out.write("K".getBytes());
-        String fileName = new String(waitForResponse(conn, in));
-        out.write("K".getBytes());
-        byte[] toEncrypt = waitForResponse(conn, in);
-        FileOutputStream fileOutputWriter = new FileOutputStream("src" + File.separator + "sample" + File.separator + "outputs" + File.separator + "" + fileName);
-        fileOutputWriter.write(decryptBytes(toEncrypt, decryptType, key));
-        fileOutputWriter.close();
-        VolatileSR.fileLoc = new File("src" + File.separator + "sample" + File.separator + "outputs" + File.separator + "" + fileName).getAbsolutePath();
+        try {
+            out.write("K".getBytes());
+            String fileName = new String(waitForResponse(conn, in));
+            out.write("K".getBytes());
+            byte[] toEncrypt = waitForResponse(conn, in);
+            FileOutputStream fileOutputWriter = new FileOutputStream("src" + File.separator + "sample" + File.separator + "outputs" + File.separator + "" + fileName);
+            fileOutputWriter.write(decryptBytes(toEncrypt, decryptType, key));
+            fileOutputWriter.close();
+            VolatileSR.fileLoc = new File("src" + File.separator + "sample" + File.separator + "outputs" + File.separator + "" + fileName).getAbsolutePath();
 
-        Platform.runLater(new Runnable() {
-            @Override public void run() {
-                contextController.enableViewer();
-            }
-        });
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    contextController.enableViewer();
+                }
+            });
 
-        Platform.runLater(new Runnable() {
-            @Override public void run() {
-                contextController.addToTree(fileName,Thread.currentThread().getId()%numOfClients +1, new File("src" + File.separator + "sample" + File.separator + "outputs" + File.separator + "" + fileName).getAbsolutePath() );
-            }
-        });
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    contextController.addToTree(fileName, Thread.currentThread().getId() % numOfClients + 1, new File("src" + File.separator + "sample" + File.separator + "outputs" + File.separator + "" + fileName).getAbsolutePath());
+                }
+            });
 
-        System.out.println("Yey");
-        out.write("Done!".getBytes());
+            System.out.println("Yey");
+            out.write("Done!".getBytes());
 
 
-        Platform.runLater(new Runnable() {
-            @Override public void run() {
-                contextController.setTextPane(fileName);
-            }   // this previously showed the string message, I just changed it to the file name
-        });
-
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    contextController.setTextPane(fileName);
+                }   // this previously showed the string message, I just changed it to the file name
+            });
+        }
+        catch (IOException iOE){
+            System.out.println(iOE.getMessage());
+            server.close();
+        }
     }
 
     private PrivateKey getPrivateKey(String location) throws Exception {
