@@ -47,7 +47,10 @@ Here's a guide on how to run the program:
 * Client requests for server certificate, and uses public key in certificate to decrypt the encrypted nonce. If it is the same as the nonce sent, Client proceeds to encrypt the file with SecStore's public key and sends it. If it is not, connection is closed.    
 
 **Our fixed version of the Authentication Protocol**
-![Image currently unavailable](https://raw.githubusercontent.com/mm-aditya/SecureStorageGUI/master/readme_resources/DiagramForHandshake.png)      
+![Image currently unavailable](https://raw.githubusercontent.com/mm-aditya/SecureStorageGUI/master/readme_resources/DiagramForHandshake.png)   
+- ![#f03c15](https://placehold.it/15/f03c15/000000?text=+) `AES Encryption`
+- ![#1589F0](https://placehold.it/15/1589F0/000000?text=+) `RSA Encryption`  
+
 
 * For CP2, once the SecStore is verified, Client will request for a symmetric key. SecStore will send it over and Client will encrypt the file with the symmetric key using AES before sending it to SecStore.  
 
