@@ -18,11 +18,11 @@ You can now simply run the pre-packaged JAR files we have included in the *src/s
 
 **Server**  
 
-> java -jar src/sample/RunClient.jar
+''''java -jar src/sample/RunClient.jar''''  
 
 **Clients**  
 
-> java -jar src/sample/RunServer.jar  
+''''java -jar src/sample/RunServer.jar''''  
 
 Do keep in mind the line seperators for your OS. 
 
