@@ -14,10 +14,14 @@ To implement a secure file upload application from a client to an Internet file 
 ## Compilation 
 Since we have a GUI you will have to include some dependencies while compiling and running our project. There is only one dependency file and it can be found under our readme_resources folder.  
 > readme_resources/jfoenix.jar  
-Once you have the dependencies included you need to run the following files in the *src/sample* directory: 
+Once you have the dependencies included you need to run the following files in the *src/sample* directory:  
+
 **Server**  
+
 > javac Client.java  
+
 **Clients**  
+
 > javac Server.java  
 
 ## Usage  
