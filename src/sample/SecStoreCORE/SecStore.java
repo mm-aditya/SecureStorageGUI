@@ -20,20 +20,6 @@ import java.util.Arrays;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-/**
- * Created by HanWei on 11/4/2017.
- */
- 
-// when connected, do the handshake protocol
-// Wait for file to be uploaded.
-// Save file.
-// Time the transfer duration (including encrypting and decrypting)
-// Usable interface. For example, you may develop a dynamic GUI that shows the changing states of the
-// various modules as your “protocol” proceeds over time.
-// Monitoring of transfers or diagnosis of transfer problems (e.g., traceroute between client and server).
-// Support for anycast upload to distributed servers.
-// SSH for security.
-
 public class SecStore extends Task{
     public static ServerSocket server;
     private final Executor exec;

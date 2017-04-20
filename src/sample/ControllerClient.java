@@ -1,23 +1,17 @@
 package sample;
 
 import com.jfoenix.controls.*;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
-import sample.SecStoreCORE.Client;
 
-import javax.swing.*;
 import java.io.IOException;
 
-public class Controller {
-
-    final SimpleDoubleProperty prop = new SimpleDoubleProperty(0);
+public class ControllerClient {
 
     @FXML
     public ProgressBar bar;
@@ -35,32 +29,31 @@ public class Controller {
     public JFXRadioButton rad2;
 
     Thread a;
-    Client client;
+    sample.SecStoreCORE.Client client;
 
     public String whatugot;
 
     public void moveToUpload() throws IOException {
-        //serverIP = (JFXTextField) Main.mainScene.lookup("#serverIP");
-        serverIPBOX = (JFXComboBox) Main.mainScene.lookup("#serverIPBOX");
+        serverIPBOX = (JFXComboBox) Client.mainScene.lookup("#serverIPBOX");
         whatugot = serverIPBOX.getValue().toString();
 
         if(whatugot.equals(""))
             loadDialog();
         else {
-            client = new Client(whatugot,6789, this);
+            client = new sample.SecStoreCORE.Client(whatugot,6789, this);
             new Thread(client).start();
-            Main.switchToTwo();
-            bar = (ProgressBar) Main.mainScene.lookup("#bar");
+            Client.switchToTwo();
+            bar = (ProgressBar) Client.mainScene.lookup("#bar");
         }
-        uploadB = (JFXButton) Main.mainScene.lookup("#uploadB");
+        uploadB = (JFXButton) Client.mainScene.lookup("#uploadB");
         uploadB.setDisable(true);
-        currentProcess = (Label) Main.mainScene.lookup("#currentProcess");
-        uploadfileName = (JFXTextField) Main.mainScene.lookup("#uploadfileName");
-        savefileName = (JFXTextField) Main.mainScene.lookup("#savefileName");
-        rad1 = (JFXRadioButton) Main.mainScene.lookup("#rad1");
-        rad2 = (JFXRadioButton) Main.mainScene.lookup("#rad2");
+        currentProcess = (Label) Client.mainScene.lookup("#currentProcess");
+        uploadfileName = (JFXTextField) Client.mainScene.lookup("#uploadfileName");
+        savefileName = (JFXTextField) Client.mainScene.lookup("#savefileName");
+        rad1 = (JFXRadioButton) Client.mainScene.lookup("#rad1");
+        rad2 = (JFXRadioButton) Client.mainScene.lookup("#rad2");
 
-        stackPaneMain = (StackPane) Main.mainScene.lookup("#stackPaneMain");
+        stackPaneMain = (StackPane) Client.mainScene.lookup("#stackPaneMain");
     }
 
     public void startUpload(){

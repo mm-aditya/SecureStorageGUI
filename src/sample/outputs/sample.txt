@@ -1,0 +1,1 @@
+<sample text file to make sure output directory is created on git clone>

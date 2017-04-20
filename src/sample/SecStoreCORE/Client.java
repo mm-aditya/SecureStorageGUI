@@ -2,7 +2,7 @@ package sample.SecStoreCORE;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import sample.Controller;
+import sample.ControllerClient;
 import sample.VolatileCl;
 
 import javax.crypto.*;
@@ -20,9 +20,6 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
-/**
- * Created by HanWei on 11/4/2017.
- */
 
 public class Client extends Task{
     int portNumber;
@@ -37,10 +34,9 @@ public class Client extends Task{
     private String sendingFile;
     private String receivingFile;
     private boolean trust;
-    private Controller contextController;
+    private ControllerClient contextController;
 
     public void startHere() {
-        //Client client = new Client("localhost", 6789);
         try {
             while(VolatileCl.appRunning) {
                 if (!trust)
@@ -49,8 +45,6 @@ public class Client extends Task{
                 else {
 
                     while ((!VolatileCl.uploadReady) && (VolatileCl.appRunning)) {
-//                        System.out.println("Name of input: " + VolatileCl.fileToUpload);
-//                        System.out.println("Name of output: " + VolatileCl.receivedFileName + "\n");
                         ;
                     }
 
@@ -62,14 +56,6 @@ public class Client extends Task{
                         System.out.println("Does file exits?: " + new File("src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "sampleData" + File.separator + sendingFile).exists());
 
                         if (new File("src" + File.separator + "sample" + File.separator + "SecStoreCORE" + File.separator + "sampleData" + File.separator + sendingFile).exists()) {
-//
-//                        if (new File("src" + File.separator + "sample" + File.separator + "outputs" + File.separator + receivingFile).exists()){
-//                            Platform.runLater(new Runnable() {
-//                                @Override public void run() {
-//                                    contextController.loadDialogMain("WARNING: File exists!","This file already exists in the\noutput directory! This is just a warning.");
-//                                }
-//                            });
-//                        }
 
                             Platform.runLater(new Runnable() {
                                 @Override
@@ -108,21 +94,6 @@ public class Client extends Task{
                 }
             }
 
-//            System.out.println("Pure RSA: small");
-//            client.testEncryption(numTrial, "RSA", "src" + File.separator + "ProgrammingAssignment2" + File.separator + "sampleData" + File.separator + "smallFile.txt", "smallRSA.txt");
-//            System.out.println("Pure RSA: medium");
-//            client.testEncryption(numTrial, "RSA", "src" + File.separator + "ProgrammingAssignment2" + File.separator + "sampleData" + File.separator + "medianFile.txt", "mediumRSA.txt");
-//            System.out.println("Pure RSA: large");
-//            client.testEncryption(numTrial, "RSA", "src" + File.separator + "ProgrammingAssignment2" + File.separator + "sampleData" + File.separator + "largeFile.txt", "largeRSA.txt");
-//            System.out.println("RSA + AES: small");
-//            client.testEncryption(numTrial, "RSA", "src" + File.separator + "ProgrammingAssignment2" + File.separator + "sampleData" + File.separator + "smallFile.txt", "smallAES.txt");
-//            System.out.println("RSA + AES: medium");
-//            client.testEncryption(numTrial, "RSA", "src" + File.separator + "ProgrammingAssignment2" + File.separator + "sampleData" + File.separator + "medianFile.txt", "mediumAES.txt");
-//            System.out.println("RSA + AES: large");
-//            client.testEncryption(numTrial, "RSA", "src" + File.separator + "ProgrammingAssignment2" + File.separator + "sampleData" + File.separator + "largeFile.txt", "largeAES.txt");
-//            client.uploadFile("src" + File.separator + "ProgrammingAssignment2" + File.separator + "sampleData" + File.separator + "smallFile.txt", "meow.txt", "AES/ECB/PKCS5Padding");
-//            System.out.println("Ok all done.");
-
             Thread.currentThread().interrupt();
 
         } catch (Exception e) {
@@ -132,7 +103,7 @@ public class Client extends Task{
         }
     }
 
-    public Client(String ipAddress, int portNum, Controller controller) {
+    public Client(String ipAddress, int portNum, ControllerClient controller) {
 
         portNumber = portNum;
         socket = new Socket();
