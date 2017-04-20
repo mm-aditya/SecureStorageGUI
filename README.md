@@ -45,9 +45,9 @@ Here's a guide on how to run the program:
 **Our fixed version of the Authentication Protocol**
 ![Image currently unavailable](https://raw.githubusercontent.com/mm-aditya/SecureStorageGUI/master/readme_resources/DiagramForHandshake.png)      
 
-* For CP2, once the SecStore is verified, Client will request for a symmetric key. SecStore will send it over and Client will encrypt the file with the symmetric key using AES before sending it to SecStore.
+* For CP2, once the SecStore is verified, Client will request for a symmetric key. SecStore will send it over and Client will encrypt the file with the symmetric key using AES before sending it to SecStore.  
 
-**Data Collection**
+## Data Collection
 We ran some test using the provided sample data and some of our own files. We used 3 file sizes and the average times of those file sizes across several comps as our input to plot a graph against.  
 ![Image currently unavailable](https://raw.githubusercontent.com/mm-aditya/SecureStorageGUI/master/readme_resources/graph.png)      
 In addition to this we also tried some other file formats like Audio, Video and Images. The encryption times don't seem to change linearly with file size in some case as evident from the graph below.  
