@@ -12,18 +12,17 @@
 To implement a secure file upload application from a client to an Internet file server. Secure concentrates on two properties: *authenticating the ID of the file server to prevent leakage of data to unauthorized sources* and *protecting the confidentiality during upload*. 
   
 ## Compilation 
-Since we have a GUI you will have to include some dependencies while compiling and running our project. There is only one dependency file and it can be found under our readme_resources folder.  
-> readme_resources/jfoenix.jar  
+~~Since we have a GUI you will have to include some dependencies while compiling and running our project. There is only one dependency file and it can be found under our readme_resources folder.~~    
+You can now simply run the pre-packaged JAR files we have included in the *src/sample* directory:  
 
-Once you have the dependencies included you need to run the following files in the *src/sample* directory:  
 
 **Server**  
 
-> javac -classpath ".;/readme_resources/jfoenix.jar;" Client.java 
+> java -jar RunClient.jar
 
 **Clients**  
 
-> javac -classpath ".;/readme_resources/jfoenix.jar;" Server.java
+> java -jar RunServer.jar
 
 ## Usage  
 Here's a guide on how to run the program:  
