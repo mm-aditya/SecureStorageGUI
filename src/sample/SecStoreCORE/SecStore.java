@@ -181,6 +181,7 @@ public class SecStore extends Task{
                     contextController.setTextPane(fileName);
                 }   // this previously showed the string message, I just changed it to the file name
             });
+
         }
         catch (IOException iOE){
             System.out.println(iOE.getMessage());

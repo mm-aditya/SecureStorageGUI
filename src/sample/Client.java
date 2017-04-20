@@ -16,7 +16,6 @@ public class Client extends Application {
     public static Scene mainScene;
 
 
-
     @Override
     public void start(Stage primaryStage) throws Exception{
         window = primaryStage;
