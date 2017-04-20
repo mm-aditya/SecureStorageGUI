@@ -19,7 +19,7 @@ You can now simply run the pre-packaged JAR files we have included in the *src/s
 **Server**  
 
 ```shell
-Java -jar src/sample/RunClient.jar 
+java -jar src/sample/RunClient.jar 
 ```  
 
 **Clients**  
