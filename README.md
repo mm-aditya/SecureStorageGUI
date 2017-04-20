@@ -8,7 +8,7 @@
 
 ## Network Assignment 1
 
-![alt text](https://raw.githubusercontent.com/mm-aditya/SecureStorageGUI/readme_resources/DiagramForHandshake.png)
+![alt text](https://raw.githubusercontent.com/mm-aditya/SecureStorageGUI/master/readme_resources/DiagramForHandshake.png)
 
 **Purpose**  
 To implement a secure file upload application from a client to an Internet file server. Secure concentrates on two properties: *authenticating the ID of the file server to prevent leakage of data to unauthorized sources* and *protecting the confidentiality during upload*. 
