@@ -19,11 +19,11 @@ Once you have the dependencies included you need to run the following files in t
 
 **Server**  
 
-> javac Client.java  
+> javac -classpath ".;/readme_resources/jfoenix.jar;" Client.java 
 
 **Clients**  
 
-> javac Server.java  
+> javac -classpath ".;/readme_resources/jfoenix.jar;" Server.java
 
 ## Usage  
 Here's a guide on how to run the program:  
