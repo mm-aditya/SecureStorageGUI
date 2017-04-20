@@ -13,16 +13,18 @@ To implement a secure file upload application from a client to an Internet file 
   
 ## Compilation 
 ~~Since we have a GUI you will have to include some dependencies while compiling and running our project. There is only one dependency file and it can be found under our readme_resources folder.~~    
-You can now simply run the pre-packaged JAR files we have included in the *src/sample* directory:  
+You can now simply run the pre-packaged JAR files we have included in the *src/sample* directory. You have to run it from the root directory though, since all our file references are based on using SecStoreGUI as the working directory. So after navigating to SecStoreGUI you can use the following commands:  
 
 
 **Server**  
 
-> java -jar RunClient.jar
+> java -jar src/sample/RunClient.jar
 
 **Clients**  
 
-> java -jar RunServer.jar
+> java -jar src/sample/RunServer.jar  
+
+Do keep in mind the line seperators for your OS. 
 
 ## Usage  
 Here's a guide on how to run the program:  
