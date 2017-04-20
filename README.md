@@ -40,7 +40,8 @@ Here's a guide on how to run the program:
 * Start SecStore first to allow it to listen on port 6789.
 * Client will send a nonce (50-digit BigInteger) to the IP address entered.
 * SecStore encrypts nonce with its private key and sends it back to Client.
-* Client requests for server certificate, and uses public key in certificate to decrypt the encrypted nonce. If it is the same as the nonce sent, Client proceeds to encrypt the file with SecStore's public key and sends it. If it is not, connection is closed.   
+* Client requests for server certificate, and uses public key in certificate to decrypt the encrypted nonce. If it is the same as the nonce sent, Client proceeds to encrypt the file with SecStore's public key and sends it. If it is not, connection is closed.    
+
 **Our fixed version of the Authentication Protocol**
 ![Image currently unavailable](https://raw.githubusercontent.com/mm-aditya/SecureStorageGUI/master/readme_resources/DiagramForHandshake.png)      
 
