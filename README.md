@@ -6,7 +6,7 @@
 
 ***
 
-# Secure Storage with 
+# Secure Storage with a GUI
 
 ## Purpose 
 To implement a secure file upload application from a client to an Internet file server. Secure concentrates on two properties: *authenticating the ID of the file server to prevent leakage of data to unauthorized sources* and *protecting the confidentiality during upload*. 
@@ -34,8 +34,7 @@ Here's a guide on how to run the program:
 * Start SecStore first to allow it to listen on port 6789.
 * Client will send a nonce (50-digit BigInteger) to the IP address entered.
 * SecStore encrypts nonce with its private key and sends it back to Client.
-* Client requests for server certificate, and uses public key in certificate to decrypt the encrypted nonce. If it is the same as the
-* nonce sent, Client proceeds to encrypt the file with SecStore's public key and sends it. If it is not, connection is closed.   
+* Client requests for server certificate, and uses public key in certificate to decrypt the encrypted nonce. If it is the same as the nonce sent, Client proceeds to encrypt the file with SecStore's public key and sends it. If it is not, connection is closed.   
 **Our fixed version of the Authentication Protocol**
 ![Image currently unavailable](https://raw.githubusercontent.com/mm-aditya/SecureStorageGUI/master/readme_resources/DiagramForHandshake.png)      
 
