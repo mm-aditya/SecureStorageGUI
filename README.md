@@ -29,6 +29,8 @@ java -jar src/sample/RunServer.jar
 ```
 
 Do keep in mind the line seperators for your OS. 
+> **Note:** Some features of the program seem to be broken when run on a MacOS system. This problem may persist on all UNIX based system.  
+
 
 ## Usage  
 Here's a guide on how to run the program:  
